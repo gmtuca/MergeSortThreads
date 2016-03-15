@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by gmtuca on 13/03/16.
- */
 public class MergeSortTest {
 
     @Test
@@ -133,14 +130,13 @@ public class MergeSortTest {
         assertSorted(MergeSortThread.sort(A,8));
     }
 
-
     private static void assertSorted(int[] A){
         assertTrue(isSorted(A));
     }
 
     private static boolean isSorted(int[] A){
-        for (int i = 0; i < A.length - 1; i++) {
-            if (A[i] > A[i + 1]) {
+        for(int i=0; i < A.length-1; i++){
+            if (A[i] > A[i+1]) {
                 return false;
             }
         }
