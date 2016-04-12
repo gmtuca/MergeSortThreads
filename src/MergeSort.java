@@ -7,13 +7,30 @@ public class MergeSort {
     public static void main(String[] args){
         if(args.length != 2){
             System.err.println("There must be exactly two arguments.");
+            System.exit(1);
         }
 
         //arguments [0] - length of random int array to sort
         //          [1] - number of threads to execute sorting
 
-        int arrayLength = Integer.parseInt(args[0]);
-        int numberOfThreads = Integer.parseInt(args[1]);
+
+        int arrayLength = 0;
+        try{
+            arrayLength = Integer.parseInt(args[0]);
+        }
+        catch(NumberFormatException e){
+            System.err.println("Array length must be an integer.");
+            System.exit(1);
+        }
+
+        int numberOfThreads = 0;
+        try{
+            numberOfThreads = Integer.parseInt(args[1]);
+        }
+        catch(NumberFormatException e){
+            System.err.println("Number of threads must be an integer.");
+            System.exit(1);
+        }
 
         //produce random dummy array to produce sorting benchmark
         int[] A = randomArray(arrayLength);
