@@ -23,12 +23,24 @@ public class MergeSort {
             System.exit(1);
         }
 
+        if(arrayLength < 0){
+            System.err.println("Array length must be a positive"
+                               + " integer or zero.");
+            System.exit(1);            
+        }
+
         int numberOfThreads = 0;
         try{
             numberOfThreads = Integer.parseInt(args[1]);
         }
         catch(NumberFormatException e){
             System.err.println("Number of threads must be an integer.");
+            System.exit(1);
+        }
+
+        if(numberOfThreads <= 0){
+            System.err.println("Number of threads must be a positive"
+                               + " integer.");
             System.exit(1);
         }
 
