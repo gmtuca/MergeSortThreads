@@ -13,7 +13,6 @@ public class MergeSort {
         //arguments [0] - length of random int array to sort
         //          [1] - number of threads to execute sorting
 
-
         int arrayLength = 0;
         try{
             arrayLength = Integer.parseInt(args[0]);
@@ -50,8 +49,9 @@ public class MergeSort {
         long startTime = System.nanoTime();
         MergeSortThread.sort(A, numberOfThreads);
         long endTime = System.nanoTime();
-
-        System.out.println(endTime-startTime);
+        
+        //Calculate performance as 1 / execution_time_in_seconds
+        System.out.println(1000000000.0/(endTime - startTime));
     }
 
     public static int[] randomArray(int l){
