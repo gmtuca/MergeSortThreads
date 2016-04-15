@@ -4,7 +4,7 @@ public class MergeSortThread extends Thread{
 
     /*
         i = starting index for this thread to sort, inclusive
-        j = ending index for this thread to sort, exclusive
+        j = ending index for this thread to sort, non-inclusive
         numberOfThreads = total number of children (directly or indirectly)
                           spawned by this instance
         A = int array to sort in-place

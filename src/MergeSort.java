@@ -10,8 +10,8 @@ public class MergeSort {
             System.exit(1);
         }
 
-        //arguments [0] - length of random int array to sort
-        //          [1] - number of threads to execute sorting
+        /* arguments [0] - length of random int array to sort
+                      [1] - number of threads to execute sorting */
 
         int arrayLength = 0;
         try{
@@ -23,8 +23,7 @@ public class MergeSort {
         }
 
         if(arrayLength < 0){
-            System.err.println("Array length must be a positive"
-                               + " integer or zero.");
+            System.err.println("Array length must be positive or zero");
             System.exit(1);            
         }
 
@@ -38,12 +37,11 @@ public class MergeSort {
         }
 
         if(numberOfThreads <= 0){
-            System.err.println("Number of threads must be a positive"
-                               + " integer.");
+            System.err.println("Number of threads must be positive.");
             System.exit(1);
         }
 
-        //produce random dummy array to produce sorting benchmark
+        //generate random dummy array to produce sorting benchmark
         int[] A = randomArray(arrayLength);
 
         long startTime = System.nanoTime();

@@ -1,7 +1,7 @@
 \documentclass{article}
-\usepackage{graphicx}
 \usepackage{listings}
-\usepackage{color}
+\usepackage{xcolor}
+\usepackage{graphicx}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -25,58 +25,96 @@
   tabsize=3
 }
 
-\graphicspath{ {out/} }
-
 \title{Analysis of Merge Sort with Threads}
-\date{12-04-2016}
+\date{14-04-2016}
 \author{Arthur Ceccotti - 8544173}
-
+ 
 \begin{document}
   \maketitle
-  I have written a version of Merge Sort of a vector of random integer contents in Java. The correctness of the program was guaranteed by running it against a sequence of JUnit tests developed in advance (attached on the bottom of this report).
 
-  Upon completion of the application, I evaluated its performance by plotting it with different parameters (vector size and number of threads). Intermittent performance drops/spikes were reduced by running every instance 10 times, allowing the gathering of average values and standard deviation. The large amount of data produced from all the runs was analysed and plotted by my Python script available in this report. 
+  \section{Introduction}
+  I have written a version of Merge Sort of a vector of random integer contents in Java. The correctness of the program was guaranteed by running it against a sequence of JUnit tests developed in advance (attached on the bottom of this report under listing \ref{lst:mergesortunit}).
 
-  With the increase of threads, one would expect linear speed up of performance, as load is equal for every thread and there are enough hardware cores. This means, with the same vector size, 10 threads should run twice faster than 5 threads. This O(\textit{n})speedup is certainly not true for the sorting of small vectors, because thread initialisation and joins would be a large overhead (which may take longer than the actual sorting!).
-
-  %%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  At first I thought the increase of threads, given constant vector size, would result on a linear increase of performance. Because each thread has equal load (with at most one more operation), vector addition with 4 threads would ideally run twice faster than that with 2 threads of same size. Thus my expected speedup was of \textit{n} times compared to a fully sequential execution, where n is the number of active threads.
-
-
-
-  Figure 1 describes the performance decrease given increase of number of threads for a small problem size of 10,000 elements on the machine \textit{mcore48.cs.man.ac.uk}  \footnote{\label{machinespecs} \\
+  Upon completion of the application, I evaluated its performance by plotting it with different parameters (vector size and number of threads). Intermittent performance drops/spikes were reduced by running every instance 10 times, allowing the gathering of average values and standard deviation. The large amount of data produced from all the runs was analysed and plotted by my Python script under listing \ref{lst:pythonscripts}. The data plots were a consequence of running the given program on \textit{mcore48.cs.man.ac.uk}. \footnote{\label{machinespecs} \\
   Dell/AMD quad 12-core (48 cores total), each with specs:\\
   model name: AMD Opteron(tm) Processor 6174 \\
   clock speed: 2.2 GHZ \\
-  cache size: 512 KB \\}. I evaluate this to occur mostly due to the thread initialisation cost. As we can see, the program performs much better with a single thread for this problem size, which means in this case it is quicker to do the whole vector addition sequentially, rather than spending a long time spawning threads which will die after doing few operations.
-\newpage
-\begin{figure}[t]
-\centerline{%
-\includegraphics[width=0.56\textwidth]{10k_lines}%
-\includegraphics[width=0.56\textwidth]{10k_errorbars}%
-}%
-\caption{Parallel vector addition of size 10,000. Average performance (left) and standard deviation error range (right) from 20 runs}
-\end{figure}
-  
-  For larger problem sizes (\textgreater1,000,000), thread initialization of a few milliseconds starts becoming insignificant compared to the lifetime of each thread.
-  The plot in figure 2 describes the run of my program for the vector size of 10,000,000 with variable threads, where such performance increase is clearly visible.
+  cache size: 512 KB \\}
 
-  This now shows how advantageous multithreaded programming can be for large input problems when few data dependencies are present.
+  \section{Evaluation}
+  On an instance of this problem, one would expect linear speed up of performance with the increase of threads, as load is equal for every thread and there are enough hardware processors. This means, with the same vector size, 10 threads should run twice faster than 5 threads. This O(\textit{n}) speedup is certainly not true for the sorting of small vectors, because of overheads such as \textbf{thread initialisation time} (which includes OS calls, stack memory assignment for the thread, adding it to the JVM data structure,...) and \textbf{joins}. This meas the overall thread creation bottleneck may take longer than the sorting itself. This is a very similar behaviour to the previous coursework for Vector Addition with Threads.
 
-\begin{figure}[t]
-\centerline{%
-\includegraphics[width=0.56\textwidth]{10M_lines}%
-\includegraphics[width=0.56\textwidth]{10M_errorbars}%
-}%
-\caption{Parallel vector addition of size 10,000,000. Average performance (left) and standard deviation error range (right) from 20 runs}
-\end{figure}
+  For small vector sizes, the increase of number of threads to solve the problem in fact decreases performance, as can be seen on figures \ref{fig:1000} and \ref{fig:10000} for vector sizes of \textit{1000} and \textit{10,000}. In these cases the program has its best performance with a single thread sorting the whole array sequentially, which saves having to spawn threads which will take milliseconds to initialise and quickly die after doing very few operations.
 
-\clearpage
+  \begin{figure}
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \caption{1,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/1000.png}
+    \label{fig:1000}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \caption{10,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/10000.png}
+    \label{fig:10000}
+  \end{minipage}
+  \end{figure}
 
-\newpage
-\newpage\newpage\newpage\newpage
-  \lstinputlisting{src/VectorAdder.java}
-  \lstinputlisting{src/VectorAdderThread.java}
-  \lstinputlisting{src/VectorAdderTest.java}
+  The balance of thread overhead and speedup is reached at \textit{100,000}-\textit{1,000,000} vector sizes, as seen on figures
+  \ref{fig:100000} and \ref{fig:1000000} respectively, where adding more threads does not significantly increase performance, as it introduces similar slowdown. Because of this the graphs present wide error bars and an overall horizontal performance. 
+
+  \begin{figure}
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \caption{100,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/100000.png}
+    \label{fig:100000}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \caption{1,000,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/1000000.png}
+    \label{fig:1000000}
+  \end{minipage}
+  \end{figure}
+
+  The advantage of threads can be finally seen on large instances of the problem with \textgreater\textit{10,000,000} elements, as described on figures \ref{fig:10000000} and \ref{fig:100000000}. Joins and initialisation still pose as an overheads, but are insignificant given the amount of sorting performed.
+
+  \clearpage
+
+  \begin{figure}
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \caption{10,000,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/10000000.png}
+    \label{fig:10000000}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \caption{100,000,000 elements}
+    \includegraphics[width=1\linewidth, natwidth=800, natheight=600]{evaluation/graphs/100000000.png}
+    \label{fig:100000000}
+  \end{minipage}
+  \end{figure}
+
+  \section{Code}
+    \subsection{Java Unit Tests}
+      \lstinputlisting[language=Java,
+                       caption=MergeSort Unit Tests,
+                       label={lst:mergesortunit}]{src/MergeSortTest.java}
+
+    \subsection{Java Merge Sort Program}
+      \lstinputlisting[language=Java,
+                       caption=MergeSort Main class,
+                       label={lst:mergesort}]{src/MergeSort.java}
+
+      \lstinputlisting[language=Java,
+                       caption=MergeSort Thread class,
+                       label={lst:mergesortthread}]{src/MergeSortThread.java}
+
+    \subsection{Data Evaluation Scripts}  
+      \lstinputlisting[language=bash,
+                       caption=Bash scripts to run MergeSort with multiple parameters,
+                       label={lst:bashscripts}]{src/DemoTuca.sct}
+      \lstinputlisting[language=Python,
+                       caption=Python scripts to gather and plot results,
+                       label={lst:pythonscripts}]{src/process.py}
 \end{document}

@@ -24,7 +24,6 @@ def stdev(data):
     pvar = ss/n # the population variance
     return pvar**0.5
 
-
 def plotandsave(l,stats):
     plt.errorbar(stats["threads"], stats["averages"], yerr=stats["stdevs"], ecolor='r', label="{:,d}".format(l))
     plt.legend(loc='upper right')
